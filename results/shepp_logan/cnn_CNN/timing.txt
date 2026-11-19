@@ -1,0 +1,1 @@
+CPU inference time per pair, 8 threads: mean 3.79 s, median 3.79 s (n = 20)

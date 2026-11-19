@@ -1,0 +1,44 @@
+Recovered fraction a (sigma_a) [z]   per structure; a = 1 is the GT amplitude, z = a / sigma_a from null placements
+structure                                                 CNN 1 pair    CNN 1 pair (pair 01)        UMPA 1 pair Nw 1      UMPA 20 pairs Nw 1      UMPA 20 pairs Nw 3
+BOX Graphite box 0.6 mm                          0.18 (0.03) [  6.4]     0.20 (0.03) [  7.4]   -1.18 (16.94) [ -0.1]    -0.03 (0.12) [ -0.2]     0.05 (0.05) [  0.8]
+CD Alumina sphere 200 um                         0.90 (0.07) [ 12.8]     0.71 (0.07) [ 10.1]   -3.69 (46.32) [ -0.1]     0.76 (0.29) [  2.6]    -0.15 (0.14) [ -1.1]
+CD Alumina sphere 120 um                         0.85 (0.11) [  7.7]     0.83 (0.10) [  8.7]    9.51 (50.20) [  0.2]    -0.43 (0.55) [ -0.8]    -0.34 (0.14) [ -2.4]
+CD Alumina sphere 60 um                          0.33 (0.17) [  1.9]     0.28 (0.16) [  1.8] -514.42 (40.81) [-12.6]    -0.58 (1.64) [ -0.4]    -0.23 (0.18) [ -1.3]
+CD Cellulose sphere 200 um                       0.86 (0.55) [  1.6]    -0.18 (0.47) [ -0.4]  -9.64 (324.88) [ -0.0]    -0.07 (1.93) [ -0.0]    -0.06 (0.87) [ -0.1]
+CD Cellulose sphere 120 um                      -0.39 (0.82) [ -0.5]     0.44 (0.72) [  0.6] 205.32 (231.65) [  0.9]     1.74 (3.78) [  0.5]     1.70 (0.98) [  1.7]
+CD Cellulose sphere 60 um                        2.79 (1.43) [  1.9]    -1.01 (1.32) [ -0.8]  58.59 (388.63) [  0.2]  -14.44 (11.83) [ -1.2]    -0.68 (1.83) [ -0.4]
+LP-x Alumina 3 fibres 120 um                     1.01 (0.03) [ 29.6]     0.98 (0.04) [ 23.8]   -4.23 (22.20) [ -0.2]     0.54 (0.14) [  3.7]     0.32 (0.09) [  3.7]
+LP-x Alumina 3 fibres 60 um                      0.82 (0.06) [ 13.4]     0.65 (0.07) [  8.9]    1.45 (33.81) [  0.0]     0.53 (0.33) [  1.6]     0.15 (0.08) [  1.8]
+LP-y Alumina 3 fibres 120 um                     0.84 (0.05) [ 17.9]     0.76 (0.04) [ 18.7]    5.11 (32.35) [  0.2]     0.48 (0.12) [  4.1]    -0.15 (0.05) [ -2.8]
+LP-y Alumina 3 fibres 60 um                      1.10 (0.04) [ 25.3]     0.96 (0.05) [ 21.1]    2.04 (54.54) [  0.0]     0.73 (0.25) [  2.9]     0.06 (0.09) [  0.7]
+ellipsoid 6 (Graphite)                           0.31 (0.04) [  8.2]     0.20 (0.03) [  6.0]   -8.26 (33.89) [ -0.2]     0.91 (0.14) [  6.6]     0.68 (0.08) [  8.7]
+ellipsoid 7 (Cellulose)                          0.61 (0.05) [ 12.8]     0.49 (0.05) [ 10.1]    4.40 (22.61) [  0.2]     0.52 (0.21) [  2.5]     0.48 (0.12) [  4.0]
+ellipsoid 8 (Hydroxyapatite)                     1.98 (0.05) [ 43.7]     1.81 (0.04) [ 44.0]  -22.14 (24.46) [ -0.9]     1.05 (0.17) [  6.1]     0.77 (0.08) [  9.6]
+ellipsoid 9 (Alumina)                            1.36 (0.08) [ 17.6]     1.04 (0.08) [ 13.7]  -12.46 (42.10) [ -0.3]     1.39 (0.31) [  4.5]     0.95 (0.13) [  7.2]
+ellipsoid 10 (Alumina)                           1.02 (0.07) [ 13.8]     0.85 (0.07) [ 11.6]    1.36 (24.51) [  0.1]     1.16 (0.28) [  4.1]     1.21 (0.13) [  9.1]
+
+High-pass texture rms (px): GT-flat phantom interior / background  (object-induced texture if interior >> background)
+  CNN 1 pair                 0.0026 / 0.0008   ratio 3.44
+  CNN 1 pair (pair 01)       0.0024 / 0.0008   ratio 3.13
+  UMPA 1 pair Nw 1           2.4254 / 4.3162   ratio 0.56
+  UMPA 1 pair Nw 3           0.0256 / 0.0219   ratio 1.17
+  UMPA 20 pairs Nw 1         0.0239 / 0.0229   ratio 1.05
+  UMPA 20 pairs Nw 3         0.0055 / 0.0049   ratio 1.12
+  GT                         0.0007 / 0.0007   ratio 0.98
+
+CNN repeatability, pairs 00 vs 01 (independent modulator positions and Poisson noise):
+  flat interior  noise std(diff)/sqrt2 = 0.0026 px, correlation of the high-pass fields = -0.03
+  background     noise std(diff)/sqrt2 = 0.0008 px, correlation of the high-pass fields = +0.01
+
+Recovered fraction a vs mu/delta of the structure (inserts + ellipsoids 6-10, detected ones: no cellulose / 60 um spheres)
+  CNN 1 pair                 corr +0.91   a = 0.40 + 1.27e-6 * mu/delta[1/mm]
+  CNN 1 pair (pair 01)       corr +0.93   a = 0.31 + 1.18e-6 * mu/delta[1/mm]
+  UMPA 20 pairs Nw 1         corr +0.30   a = 0.45 + 0.46e-6 * mu/delta[1/mm]
+  UMPA 20 pairs Nw 3         corr +0.22   a = 0.21 + 0.32e-6 * mu/delta[1/mm]
+
+Null placements (template in GT-flat water): max |z| reached, per method (false-positive level)
+  CNN 1 pair                 max |z_null| = 3.6  (n placements per structure ~300)
+  CNN 1 pair (pair 01)       max |z_null| = 4.3  (n placements per structure ~300)
+  UMPA 1 pair Nw 1           max |z_null| = 11.8  (n placements per structure ~300)
+  UMPA 20 pairs Nw 1         max |z_null| = 3.7  (n placements per structure ~300)
+  UMPA 20 pairs Nw 3         max |z_null| = 4.3  (n placements per structure ~300)

@@ -1,0 +1,13 @@
+cmake_minimum_required(VERSION 3.16...3.21)
+project(PEPI2)
+find_package(Geant4 REQUIRED)
+include(${Geant4_USE_FILE})
+include_directories(${PROJECT_SOURCE_DIR}/include)
+file(GLOB sources ${PROJECT_SOURCE_DIR}/src/*.cc)
+file(GLOB headers ${PROJECT_SOURCE_DIR}/include/*.hh)
+add_executable(PEPI2 PEPI2.cc ${sources} ${headers})
+target_link_libraries(PEPI2 ${Geant4_LIBRARIES})
+# macros and configuration files go next to the executable; the code reads ../data/
+foreach(_f detmask_config.in geometry_config.in gps.in run_R00.mac run_R01.mac run_R02.mac run_R03.mac run_R04.mac run_R05.mac run_R06.mac run_R07.mac run_R08.mac run_R09.mac run_R10.mac run_R11.mac run_R12.mac run_R13.mac run_R14.mac run_R15.mac run_R16.mac run_R17.mac run_R18.mac run_R19.mac run_S00.mac run_S01.mac run_S02.mac run_S03.mac run_S04.mac run_S05.mac run_S06.mac run_S07.mac run_S08.mac run_S09.mac run_S10.mac run_S11.mac run_S12.mac run_S13.mac run_S14.mac run_S15.mac run_S16.mac run_S17.mac run_S18.mac run_S19.mac run_check_fantoma.mac run_check_flat.mac)
+  configure_file(${PROJECT_SOURCE_DIR}/mac/${_f} ${PROJECT_BINARY_DIR}/${_f} COPYONLY)
+endforeach()

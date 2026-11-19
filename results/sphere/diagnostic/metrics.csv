@@ -1,0 +1,7 @@
+method,input,corr,slope,rms_output_um
+"CNN, 1 pair",warp,0.002199,5.467e-05,0.01801
+"CNN, 1 pair",absorption,0.7881,0.1589,0.1461
+"CNN, 1 pair",real,0.7302,0.2211,0.2193
+"UMPA, 1 pair (11x11)",warp,0.896,0.2618,0.2116
+"UMPA, 1 pair (11x11)",absorption,0.07109,0.0301,0.3067
+"UMPA, 1 pair (11x11)",real,0.2574,0.2851,0.8027
