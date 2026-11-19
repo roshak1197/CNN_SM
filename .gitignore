@@ -8,3 +8,9 @@ results/log_*.txt
 __pycache__/
 *.pyc
 geant4/shepp_logan/build/
+# third-party code, weights and data (downloaded by third_party/fetch_third_party.sh, never committed)
+third_party/*
+!third_party/fetch_third_party.sh
+!third_party/link_local_copies.sh
+!third_party/README.md
+data/third_party/

@@ -5,7 +5,9 @@ a convolutional neural network approach"** (S. González López, C. D. Tibambre,
 
 It contains the authors' own simulated data (Geant4), the analytic ground truths, the CNN and its weights, the
 scripts that produce every number and figure of the supplementary material, and the supplementary PDF itself.
-Other networks used during the revision (ESPINNet, StrainNet) and third-party datasets are **not** included.
+The comparison with other methods (UMPA, StrainNet, ESPINNet) on our phantoms and on four third-party datasets is
+part of the pipeline (section S8 of the PDF), but third-party code, weights and data are **not** redistributed:
+`third_party/fetch_third_party.sh` downloads them from their original sources.
 
 ## Layout
 
@@ -21,6 +23,7 @@ data/
 cnn/             FlowNet.py (FlowNetPyramidal), checkpoints/CNN.pt (pre-trained), finetuned_best_model.pt
 geant4/          shepp_logan/  Geant4 application that produced data/shepp_logan (sources, macros, logs)
                  preparar_geant4_sl.py  generator of that application from the sphere project (provenance)
+third_party/     fetch_third_party.sh (downloads ESPINNet, StrainNet, MIST, fly; nothing committed), README.md
 scripts/         analysis pipeline (reads only .txt)
 results/         metric tables (maps are regenerated, see .gitignore)
 figures/         every figure, PNG + PDF, diverging (rdbu) and gray versions
@@ -55,6 +58,21 @@ d = −(z2/P) ∂(∫δ dl)/∂x_obj; `proj_delta_mm` = ∫δ dl; `mu_line` = �
 `label` = 0 background, 1 object (sphere) or 1–10 ellipsoid regions and 11 + k insert k (Shepp–Logan).
 δ values are those of the Geant4 refraction tables (data/*_delta.txt of the Geant4 application).
 
+## Third-party material (comparison, section S8)
+
+| What | Source | Licence | How |
+|---|---|---|---|
+| ESPINNet code + weights | Qiao et al., J. Synchrotron Rad. 33, 467 (2026), github.com/QDLDQQiao/ESPINNet | MIT | `git clone` |
+| ESPINNet test data | OneDrive link in the ESPINNet README | (with the repository) | manual download |
+| StrainNet code + Star frames | Boukhtache et al. 2021, github.com/DreamIP/StrainNet | CC BY-NC-SA 4.0 | `git clone` |
+| StrainNet-h weights | Google Drive link in the StrainNet README | CC BY-NC-SA 4.0 | manual download |
+| MIST wattle flower data | Alloo et al., Sci. Rep. (2023), github.com/samanthaalloo/MIST_Alloo23 | MIT | `git clone` |
+| Fly data | OSF project 4ruq2, osf.io/4ruq2 | not stated | OSF zip download |
+
+`bash third_party/fetch_third_party.sh` (then the two manual downloads it lists) and
+`python scripts/prepare_third_party.py`, which writes the pairs as .txt to `data/third_party/` (~0.9 GB, git-ignored)
+with the preprocessing of the analysis (MIST dark/flat correction as in the authors' script; 1024 × 1024 ROIs).
+
 ## Reproducing everything
 
 Two Python environments were used on the original server (any single environment with all packages works):
@@ -65,7 +83,9 @@ PY_CNN=python PY_UMPA=python bash run_all.sh
 ```
 
 Steps (all in `scripts/`): `make_diagnostic_inputs.py` → `run_cnn.py` → `run_umpa.py` → `gt_consistency_check.py` →
-`metrics.py` → `inserts_analysis.py` → `figures.py` → `make_supplementary.py`. CNN inference runs on CPU
+`prepare_third_party.py` → `run_umpa_comparison.py` → `run_networks.py` → `metrics.py` → `inserts_analysis.py` →
+`figures.py` → `comparison.py` → `make_supplementary.py`. The comparison needs a few hours on CPU (1024 × 1024 images;
+maps of these runs are written as .txt.gz). CNN inference runs on CPU
 (≈ 4 s per pair with 8 threads). `common.py` holds the conventions (paths, geometry, masks, regions, metrics).
 
 Conventions of every result file: displacements in detector pixels with the physical sign of the GT (raw UMPA output is

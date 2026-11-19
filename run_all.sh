@@ -14,7 +14,12 @@ for ds in sphere shepp_logan; do
   $PY_UMPA run_umpa.py --dataset $ds --diagnostic
 done
 $PY_UMPA gt_consistency_check.py
+# comparison with other methods (section S8): needs third_party/ (bash ../third_party/fetch_third_party.sh)
+$PY_CNN  prepare_third_party.py
+$PY_UMPA run_umpa_comparison.py
+$PY_CNN  run_networks.py
 $PY_CNN metrics.py
 $PY_CNN inserts_analysis.py
 $PY_CNN figures.py
+$PY_CNN comparison.py
 $PY_UMPA make_supplementary.py      # needs reportlab

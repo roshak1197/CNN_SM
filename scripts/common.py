@@ -117,3 +117,48 @@ def agreement(dx, dy, gx, gy, k):
     pooled, over mask k. Slope 1 = correct amplitude."""
     m, g = np.r_[dx[k], dy[k]], np.r_[gx[k], gy[k]]
     return dict(corr=float(np.corrcoef(m, g)[0, 1]), slope=float((m @ g) / (g @ g)))
+
+
+# ------------------------------------------------------------------------------------------------------------------
+# Third-party datasets of the comparison (section S8). Downloaded by third_party/fetch_third_party.sh and converted to
+# .txt in data/third_party/<name>/pairs by prepare_third_party.py (neither is committed). P = detector pixel (mm),
+# z2 = sample-detector distance (mm), M = magnification used for the phase integration, E = energy (keV; fly: assumed
+# effective energy, only the phase scale depends on it). Star: optical DIC images, no physical pixel, no phase.
+THIRD = {
+    'mist': dict(name='MIST wattle flower (IMBL, 25 keV)', pixel_mm=0.0099, z2_mm=2000.0, M=1.0, E_keV=25.0,
+                 pairs=list(range(15)), border=40, reference='UMPA, 15 pairs (7x7)'),
+    'fly': dict(name='Fly (laboratory source, 40 kV)', pixel_mm=0.0052, z2_mm=530.0, M=1.0, E_keV=20.0,
+                pairs=list(range(20)), border=40, reference='UMPA, 20 pairs (7x7)'),
+    'espinnet': dict(name='ESPINNet test data (synchrotron, 20 keV)', pixel_mm=0.00065, z2_mm=812.0, M=1.0,
+                     E_keV=20.0, pairs=list(range(20)), border=40, reference='UMPA, 20 pairs (7x7)'),
+    'star': dict(name="StrainNet 'Star' (optical speckle)", pixel_mm=None, pairs=[0, 1], border=30,
+                 reference='analytic', conditions=['Noiseless', 'Noisy']),
+}
+THIRD_DIR = os.path.join(ROOT, 'third_party')
+# Star ground truth: vertical displacement v = A cos(2 pi (y - y0) / p(x)), p linear from p0 (x = 0) to p1 (x = W - 1),
+# u = 0 (DIC Challenge 2.0 'Star': nominal A = 0.5 px, period 10 -> 150 px; parameters fitted to the frames).
+STAR_GT = dict(A=0.50831612, y0=250.03206649, p0=10.02091053, p1=149.91372789)
+
+
+def load_pair_any(ds, k):
+    if ds in GEOM:
+        return load_pair(ds, k)
+    d = os.path.join(DATA, 'third_party', ds, 'pairs')
+    return np.loadtxt(os.path.join(d, f'R{k:02d}.txt')), np.loadtxt(os.path.join(d, f'S{k:02d}.txt'))
+
+
+def star_gt(shape=(501, 2000)):
+    H, W = shape
+    yy, xx = np.mgrid[0:H, 0:W].astype(float)
+    g = STAR_GT
+    v = g['A'] * np.cos(2 * np.pi * (yy - g['y0']) / (g['p0'] + (g['p1'] - g['p0']) * xx / (W - 1)))
+    return 0 * v, v
+
+
+def frankot_chellappa(gx, gy):
+    """Least-squares integration of a gradient field (same algorithm as ESPINNet's func.frankotchellappa)."""
+    NN, MM = gx.shape
+    wx, wy = np.meshgrid(np.fft.fftfreq(MM) * 2 * np.pi, np.fft.fftfreq(NN) * 2 * np.pi, indexing='xy')
+    num = -1j * wx * np.fft.fft2(gx) - 1j * wy * np.fft.fft2(gy)
+    phi = np.real(np.fft.ifft2(num / np.fmax(wx ** 2 + wy ** 2, np.finfo(float).eps)))
+    return phi - phi.mean()

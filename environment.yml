@@ -8,6 +8,8 @@ dependencies:
   - scipy=1.15
   - matplotlib=3.10
   - reportlab
+  - tifffile
+  - scikit-image      # imported by ESPINNet's estimate_single.py
   - pip
   - pip:
       - torch==2.7.1        # CPU build is enough

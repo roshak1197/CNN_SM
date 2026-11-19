@@ -93,6 +93,113 @@ def metric_table(ds, regs):
     return rows
 
 
+def comparison_rows():
+    with open(path('results', 'comparison', 'table.csv')) as f:
+        return {(r['dataset'], r['method']): r for r in csv.DictReader(f)}
+
+
+def comparison_section(ms, ml):
+    T = comparison_rows()
+    U, SN, E1, C, EN = ('UMPA, 1 pair (31×31)', 'StrainNet, 1 pair', 'ESPINNet, 1 pair*', 'CNN (this work), 1 pair',
+                        'ESPINNet, all pairs')
+    SH = 'reference split-half (UMPA, two halves of the pairs)'
+    g = lambda ds, m, q, nd=2: f"{float(T[(ds, m)][q]):.{nd}f}"
+    st = [P('S8 Comparison with other single-shot methods', H1),
+          P('The CNN was compared, at equal dose (one reference/sample pair), with every single-shot method whose code '
+            'and trained weights are publicly available: UMPA with a 31 × 31 window (the single-pair setting of '
+            'Qiao et al. 2026), StrainNet-h [Boukhtache et al. 2021], a CNN for digital image correlation of optical '
+            'speckle trained on displacements up to about ±1 px, and ESPINNet [Qiao et al. 2026], a network for X-ray '
+            'speckle tracking that takes 20 reference and 20 sample frames. ESPINNet is designed for two or more '
+            'pairs; with a single pair the pair was replicated 20 times (marked *). Its single-shot predecessor, '
+            'SPINNet, has no public weights. Six datasets spanning different regimes were used (Table S5): the two '
+            'Geant4 phantoms of this work, two published experimental data sets (MIST wattle flower, fly), the '
+            "optical 'Star' images of StrainNet, and the synchrotron test data of ESPINNet. The third-party data and "
+            'networks are not redistributed: the repository downloads them from their original sources.'),
+          P('<b>Protocol.</b> Each single-pair method is applied to every pair of a dataset, and the metrics are the '
+            'mean over pairs. The reference is the analytic ground truth when it exists, otherwise UMPA with all pairs '
+            '(7 × 7 window). For MIST and the fly the all-pair UMPA is noisy pixel by pixel (the two halves of the '
+            f'data give displacement maps with correlation {g("mist", SH, "corr")} and {g("fly", SH, "corr")}) but '
+            f'reliable after integration (split-half phase similarity {g("mist", SH, "phase_similarity")} and '
+            f'{g("fly", SH, "phase_similarity")}), so the integrated phase is the meaningful comparison there. Displacement metrics: '
+            'correlation and slope (amplitude ratio) with the reference, d<sub>x</sub> (d<sub>y</sub> for the Star). '
+            'Phase metrics: the displacement is integrated with the Frankot–Chellappa algorithm and compared with the '
+            'integrated reference (similarity = correlation; scale = regression slope). No output is rescaled; the '
+            'sign convention of each method is fixed once per dataset (with the ground truth, or with the phase '
+            'similarity on the real data). Every map is shown with its own colour scale, so that the scale bar gives '
+            'the amplitude.')]
+    rows = [['dataset', 'source', 'E (keV)', 'pixel (µm)', 'z<sub>2</sub> (m)', 'pairs', 'reference']]
+    for r in (['Nylon sphere', 'this work (Geant4)', '28', '55', '0.75', '20', 'analytic'],
+              ['Shepp–Logan', 'this work (Geant4)', '28', '55', '0.65', '20', 'analytic'],
+              ['MIST wattle flower', 'Alloo et al. 2023, Sci. Rep. (IMBL); github.com/samanthaalloo/MIST_Alloo23',
+               '25', '9.9', '2.0', '15', 'UMPA, 15 pairs'],
+              ['Fly', 'OSF project 4ruq2 (laboratory, 40 kV)', '20†', '5.2', '0.53', '20', 'UMPA, 20 pairs'],
+              ["Star", 'Boukhtache et al. 2021 (StrainNet repository; optical DIC images)', '–', '–', '–', '2',
+               'analytic'],
+              ['ESPINNet test data', 'Qiao et al. 2026, J. Synchrotron Rad. 33, 467 (synchrotron)', '20', '0.65',
+               '0.812', '20', 'UMPA, 20 pairs']):
+        rows.append(r)
+    st.append(table(rows, 'Datasets of the comparison. Third-party data are used as published (MIST: dark- and '
+                          'flat-field corrected as in the authors\' script; the others raw), on a 1024 × 1024 central '
+                          'region (Star: full frame). † Assumed effective energy; it only sets the scale of the phase.',
+                    widths=[2.6, 6.3, 1.3, 1.4, 1.2, 1.1, 2.6]))
+    st.append(P(f'<b>Simulated phantoms.</b> On the sphere and the Shepp–Logan phantom the CNN gives the highest '
+                f'displacement correlation with the ground truth ({g("sphere", C, "corr")} and '
+                f'{g("shepp_logan", C, "corr")}, vs {g("sphere", U, "corr")} and {g("shepp_logan", U, "corr")} for '
+                f'UMPA 31 × 31) and the highest phase similarity, with slopes of {g("sphere", C, "slope")} and '
+                f'{g("shepp_logan", C, "slope")} (Figs. S{NFIG[0] + 1}, S{NFIG[0] + 2}). StrainNet and single-pair '
+                'ESPINNet do not recover the object (correlations at or below '
+                f'{max(float(T[(d, m)]["corr"]) for d in ("sphere", "shepp_logan") for m in (SN, E1)):.2f}): the '
+                'displacements (≈ 0.02–0.08 px) are far below StrainNet’s training range, and the absorption of the '
+                'object breaks the brightness constancy that StrainNet assumes, while ESPINNet needs several '
+                'modulator positions.'))
+    st.append(fig('fig_comparison_1_sphere_gray', 'Nylon sphere, one pair. Top: d<sub>x</sub> (µm on the detector); '
+                  'bottom: integrated phase. Columns: analytic ground truth, UMPA (31 × 31), StrainNet-h, ESPINNet '
+                  '(pair replicated ×20), CNN. Each panel has its own colour scale; correlation/slope and phase '
+                  'similarity/scale against the reference are given above each panel (mean over the 20 pairs).'))
+    st.append(fig('fig_comparison_2_shepp_logan_gray', 'Shepp–Logan phantom, one pair; layout as in the previous '
+                  'figure.'))
+    st.append(P(f'<b>Experimental data.</b> On the MIST and fly data, UMPA 31 × 31 recovers both the shape and the '
+                f'amplitude of the integrated phase (similarity {g("mist", U, "phase_similarity")} and '
+                f'{g("fly", U, "phase_similarity")}, scale {g("mist", U, "phase_scale")} and {g("fly", U, "phase_scale")}). '
+                f'The CNN reproduces the outline of the samples (phase similarity {g("mist", C, "phase_similarity")} '
+                f'and {g("fly", C, "phase_similarity")}) at about {100 * float(T[("fly", C)]["phase_scale"]):.0f} % of '
+                'the reference amplitude: these data (speckle of 6–18 px, larger displacements, different energies) '
+                'are outside its training domain. For MIST the CNN similarity is partly inflated, because the MIST '
+                'phase is itself derived from intensity differences. StrainNet and single-pair ESPINNet give '
+                f'lower similarities, while ESPINNet with all pairs reaches {g("fly", EN, "phase_similarity")} on the '
+                'fly and works as intended on its own data (below).'))
+    st.append(fig('fig_comparison_3_mist_gray', 'MIST wattle flower (Alloo et al. 2023), one pair; reference: UMPA '
+                  'with the 15 pairs.'))
+    st.append(fig('fig_comparison_4_fly_gray', 'Fly (OSF 4ruq2), one pair; reference: UMPA with the 20 pairs.'))
+    st.append(P(f"<b>Regimes of the other networks.</b> On StrainNet's Star images (sinusoidal displacement of "
+                f'0.5 px, period 10–150 px), StrainNet recovers the field (correlation {g("star", SN, "corr")}, '
+                f'slope {g("star", SN, "slope")}), and so does UMPA ({g("star", U, "corr")}); the CNN returns no '
+                f'signal ({g("star", C, "corr")}). On the ESPINNet test data (displacements up to ≈ 7 px, '
+                f'speckle ≈ 16 px), ESPINNet with all 20 pairs matches the reference '
+                f'(phase similarity {g("espinnet", EN, "phase_similarity")}), UMPA with one pair reaches '
+                f'{g("espinnet", U, "phase_similarity")}, and the CNN only marks edges at '
+                f'{g("espinnet", C, "slope", 3)} of the reference amplitude. Each network therefore works in the regime '
+                'it was trained for; the CNN of this work is specific to small (sub-0.1 px) displacements with fine '
+                'speckle, and even there it recovers 0.2–0.3 of the amplitude (Sections S5–S7).'))
+    st.append(fig('fig_comparison_5_star_gray', "StrainNet 'Star' images (noiseless and noisy, mean shown in the "
+                  'labels), d<sub>y</sub> in pixels; reference: analytic displacement.'))
+    st.append(fig('fig_comparison_6_espinnet_gray', 'ESPINNet test data (Qiao et al. 2026), one pair; reference: '
+                  'UMPA with the 20 pairs.'))
+    names = {'sphere': 'Sphere', 'shepp_logan': 'Shepp–Logan', 'mist': 'MIST', 'fly': 'Fly', 'star': 'Star',
+             'espinnet': 'ESPINNet data'}
+    rows = [['dataset', 'method', 'disp. corr', 'disp. slope', 'phase sim.', 'phase scale']]
+    for (ds, m), r in T.items():
+        if m == SH:
+            continue
+        ph = '–' if r['phase_similarity'] in ('nan', '') else f"{float(r['phase_similarity']):.2f}"
+        sc = '–' if r['phase_scale'] in ('nan', '') else f"{float(r['phase_scale']):.2f}"
+        rows.append([names[ds], m.replace(' (this work)', ''), f"{float(r['corr']):.2f}", f"{float(r['slope']):.2f}", ph, sc])
+    st.append(table(rows, 'Single-pair comparison: mean over pairs of the displacement correlation and slope and of '
+                          'the integrated-phase similarity and scale against the reference. ESPINNet, all pairs = '
+                          'multi-frame reference of that network.', widths=[2.8, 5.0, 2.0, 2.0, 2.0, 2.0]))
+    return st
+
+
 def onpage(c, d):
     c.saveState()
     c.setFont('Times-Roman', 8)
@@ -119,7 +226,7 @@ def build():
     for s in ('S1 Data and code', 'S2 Monte Carlo simulations', 'S3 Analytic ground truth',
               'S4 Retrieval methods and figures of merit', 'S5 Nylon sphere: equal-dose comparison',
               'S6 Shepp–Logan phantom: fine structure', 'S7 Control experiment: what each method responds to',
-              'S8 X-ray spectrum of the experimental set-up'):
+              'S8 Comparison with other single-shot methods', 'S9 X-ray spectrum of the experimental set-up'):
         st.append(P(s))
 
     # ---------------------------------------------------------------- S1
@@ -319,11 +426,13 @@ def build():
                'reference times the object transmission (no displacement), and on the real sample. r = correlation '
                'with the ground-truth displacement inside the object.')]
 
-    # ---------------------------------------------------------------- S8
-    st += [KeepTogether([P('S8 X-ray spectrum of the experimental set-up', H1),
+    st += comparison_section(ms, ml)
+
+    # ---------------------------------------------------------------- S9
+    st += [KeepTogether([P('S9 X-ray spectrum of the experimental set-up', H1),
            P('The spectrum of the laboratory source used for the experimental data (tungsten anode, 50 kVp, estimated '
              '25 µm Be window, 12° anode angle) was computed with SpekPy (v2.5.4). Its fluence-weighted mean energy is '
-             '14.1 keV at the tube exit (Fig. S8); the effective energy defined by the first aluminium half-value '
+             f'14.1 keV at the tube exit (Fig. S{NFIG[0] + 1}); the effective energy defined by the first aluminium half-value '
              'layer is 6.1 keV. The tabulated spectrum is distributed with the data.'),
            fig('fig_spectrum', 'SpekPy spectrum of the W-anode source at 50 kVp (absolute fluence at 1 m per mAs).',
                width=10.0)])]
