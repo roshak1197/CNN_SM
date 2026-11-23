@@ -27,7 +27,7 @@ third_party/     fetch_third_party.sh (downloads ESPINNet, StrainNet, MIST, fly;
 scripts/         analysis pipeline (reads only .txt)
 results/         metric tables (maps are regenerated, see .gitignore)
 figures/         every figure, PNG + PDF, diverging (rdbu) and gray versions
-supplementary/   Supplementary_Material.pdf
+supplementary/   Supplementary_Material.pdf (local only, not published yet)
 ```
 
 ## Data
